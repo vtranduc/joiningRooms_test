@@ -61,9 +61,17 @@ io.on('connection', (socket) => {
 
   socket.on('joinARoom', (data) => {
 
+    // Check to see if user is trying to join the room he/she has already joined
+
+    const uniqueRoomName = `${data.gameId}-${data.roomId}`;
+    const joinedRooms = getJoinedRooms(game_data, io, socket.id);
+    if (joinedRooms.includes(uniqueRoomName)) {
+      return;
+    };
+
     // Leave all the rooms
 
-    for (joinedRoom of getJoinedRooms(game_data, io, socket.id)) {
+    for (joinedRoom of joinedRooms) {
       socket.leave(joinedRoom);
       let room_info = io.sockets.adapter.rooms[joinedRoom];
       if (room_info) {
@@ -72,13 +80,11 @@ io.on('connection', (socket) => {
     }
 
     // Join the room
-
-    const uniqueRoomName = `${data.gameId}-${data.roomId}`;
-    socket.join(uniqueRoomName)
+    
+    socket.join(uniqueRoomName);
     var clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
     io.sockets.to(uniqueRoomName).emit('updateUserList', clients);
   });
-
 
 });
 

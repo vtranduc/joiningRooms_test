@@ -2,16 +2,16 @@ var socket = io.connect('http://localhost:8080');
 
 console.log('hello world')
 
-const createBtn = document.getElementById('createBtn');
-const assignRoomName = document.getElementById('assignRoomName');
+// const createBtn = document.getElementById('createBtn');
+// const assignRoomName = document.getElementById('assignRoomName');
 // const roomList = document.getElementById('roomList')
 const roomList = document.getElementsByClassName('roomList')
 
-createBtn.addEventListener('click', () => {
-  socket.emit('creatingRoom', {
-    roomName: assignRoomName.value
-  });
-});
+// createBtn.addEventListener('click', () => {
+//   socket.emit('creatingRoom', {
+//     roomName: assignRoomName.value
+//   });
+// });
 
 //====================================================
 
