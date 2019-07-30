@@ -34,9 +34,9 @@
         <!--  -->
         <br/>
 
-        <form method="POST" action="createRoom">
+        <form method="POST" action="/createRoom" class="roomCreator" data-gamename=<%=game%>>
           <input placeholder="Enter unique room name to be created here">
-          <button>Create a room</button>
+          <button type="submit">Create a room</button>
         </form>
 
         <br/>
@@ -46,7 +46,6 @@
         <% for (let room in game_data[game].room_data) { %>
           <button class="room" data-gameid=<%=game%> data-roomid=<%=room%> value=<%=room%>><%=room%></button>
         <% } %>
-        <br/>
       </div> 
     <% } %>
   </div>

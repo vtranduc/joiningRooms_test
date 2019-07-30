@@ -5,7 +5,7 @@ console.log('hello world')
 // const createBtn = document.getElementById('createBtn');
 // const assignRoomName = document.getElementById('assignRoomName');
 // const roomList = document.getElementById('roomList')
-const roomList = document.getElementsByClassName('roomList')
+
 
 // createBtn.addEventListener('click', () => {
 //   socket.emit('creatingRoom', {
@@ -14,6 +14,8 @@ const roomList = document.getElementsByClassName('roomList')
 // });
 
 //====================================================
+
+const roomList = document.getElementsByClassName('roomList')
 
 const gameList = document.getElementsByClassName('game');
 for (let game of gameList) {
@@ -27,14 +29,7 @@ for (let game of gameList) {
   })
 }
 
-$(document).ready(() => {
-  
-  $('.room').on('click', function () {
-    const roomId = $(this).attr('data-roomid');
-    const gameId = $(this).attr('data-gameid')
-    socket.emit('joinARoom', {roomId: roomId, gameId: gameId})
-  });
-});
+
 
 socket.on('updateUserList', (data) => {
   logs.innerHTML = "";
@@ -42,6 +37,40 @@ socket.on('updateUserList', (data) => {
     logs.innerHTML += `<p>${key}</p>`
   };
 });
+
+// Loading jquery
+
+$(document).ready(() => {
+  roomJoiner();
+  dynamicRoom();
+});
+
+// Functions to be loaded on jquery
+
+const roomJoiner = function() {
+  $('.room').on('click', function () {
+    const roomId = $(this).attr('data-roomid');
+    const gameId = $(this).attr('data-gameid')
+    socket.emit('joinARoom', {roomId: roomId, gameId: gameId})
+  });
+};
+
+const dynamicRoom = function() {
+
+  $('.roomCreator').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax('/createRoom', {
+      type: 'POST',
+      data: $(this).serialize(),
+      dataType: 'text'
+    }).done(function() {
+      console.log('successful')
+    }).fail(function(error) {
+      console.log('Failed: ', error)
+    })
+  });
+
+}
 
 //====================================================
 
@@ -73,3 +102,4 @@ socket.on('updateUserList', (data) => {
 //     logs.innerHTML += `<p>${key}</p>`
 //   }
 // });
+

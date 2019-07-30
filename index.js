@@ -1,6 +1,24 @@
 const express = require('express');
 var socket = require('socket.io');
 
+// Exaple data
+
+let game_data ={
+  whosbigger:{
+    room_data: {
+      woodpecker: {},
+      dragon: {},
+      hippo: {}
+    }
+  },
+  kingsCup: {
+    room_data: {
+      woofpecker: {}
+    }
+  },
+  goofy: {room_data: {}}
+}
+
 // App setup
 
 var app = express();
@@ -23,21 +41,13 @@ app.get("/", (req, res) => {
   })
 })
 
+app.post('/createRoom', function(req, res) {
+  res.send('ok')
+})
+
 // // Socket setup
 
 var io = socket(server);
-
-game_data ={
-  whosbigger:{
-    room_data: {
-      woodpecker: {},
-      dragon: {},
-      hippo: {}
-    }
-  },
-  kingsCup: {room_data: {woofpecker: {}}},
-  goofy: {room_data: {}}
-}
 
 io.on('connection', (socket) => {
 
@@ -57,6 +67,8 @@ io.on('connection', (socket) => {
   //   var clients = io.sockets.adapter.rooms[data].sockets;
   //   io.sockets.to(data).emit('addingNewUser', clients);
   // });
+
+  // socket.on('')
 
 
   socket.on('joinARoom', (data) => {
@@ -82,7 +94,7 @@ io.on('connection', (socket) => {
     // Join the room
     
     socket.join(uniqueRoomName);
-    var clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
+    const clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
     io.sockets.to(uniqueRoomName).emit('updateUserList', clients);
   });
 
