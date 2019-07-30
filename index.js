@@ -1,5 +1,7 @@
 const express = require('express');
 var socket = require('socket.io');
+const bodyParser = require("body-parser");
+
 
 // Exaple data
 
@@ -24,17 +26,16 @@ let game_data ={
 var app = express();
 
 
-// Static files
+// Set-up and start server
 
 app.use('/public', express.static('./public'));
-
+app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-
 var server = app.listen(8080, () => {
   console.log('Port ready on 8080');
 });
 
-// Initializing the browser
+// Apps
 
 app.get("/", (req, res) => {
   res.render("lobby", {game_data
@@ -42,7 +43,19 @@ app.get("/", (req, res) => {
 })
 
 app.post('/createRoom', function(req, res) {
-  res.send('ok')
+  console.log(req.body.selectedName)
+  console.log('hello')
+
+  if (validateNewRoom(req.body.selectedName, game_data)) {
+    console.log('this is fine');
+
+    
+
+  } else {
+    console.log('THIS NAME IS BAD')
+  }
+
+  res.send(req.body.selectedName)
 })
 
 // // Socket setup
@@ -120,3 +133,31 @@ const getJoinedRooms = function(game_data, io, userID) {
   }
   return output;
 };
+
+const validateNewRoom = function(roomName, game_data) {
+  if (roomName === "") {
+    return false;
+  }
+  for (let gameName in game_data) {
+    if (game_data[gameName].room_data[roomName]) {
+      return false;
+    }
+  }
+  return true;
+};
+
+// et game_data ={
+//   whosbigger:{
+//     room_data: {
+//       woodpecker: {},
+//       dragon: {},
+//       hippo: {}
+//     }
+//   },
+//   kingsCup: {
+//     room_data: {
+//       woofpecker: {}
+//     }
+//   },
+//   goofy: {room_data: {}}
+// }

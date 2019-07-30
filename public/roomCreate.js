@@ -56,20 +56,23 @@ const roomJoiner = function() {
 };
 
 const dynamicRoom = function() {
-
   $('.roomCreator').on('submit', function(event) {
     event.preventDefault();
     $.ajax('/createRoom', {
       type: 'POST',
       data: $(this).serialize(),
       dataType: 'text'
-    }).done(function() {
-      console.log('successful')
+    }).done(function(data) {
+      console.log('successful: ', data)
+
+      const gameName = $(this).attr('data-gamename');
+      console.log(gameName)
+      console.log($(this))
+
     }).fail(function(error) {
       console.log('Failed: ', error)
     })
   });
-
 }
 
 //====================================================
