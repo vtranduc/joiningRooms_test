@@ -24,9 +24,15 @@ room_data = {
   dog: {},
   Woodpecker: {}
 };
+game_data ={
+  whosbigger:{room_data: {}},
+  kingsCup: {room_data: {}},
+  goofy: {room_data: {}}
+}
 
 app.get("/", (req, res) => {
-  res.render("lobby", {room_data: room_data})
+  res.render("lobby", {room_data, game_data
+  })
 })
 
 

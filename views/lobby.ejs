@@ -9,10 +9,17 @@
 </head>
 <body>
 
+ 
+
+  <div id = "gameList" style= "border: solid">
+      <% for (let game in game_data) { %>
+      <button  class="game" value=<%= game %> ><%= game %></button>
+      <% } %>
+  </div>
+  <br>
   <input id="assignRoomName" placeholder="Your room name here"/>
   <button id="createBtn">Start a room</button>
-  <br>
-
+ 
   <ul id="roomList" style="border: solid">
 
 
