@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+
+  <!-- External JS -->
+  <script type="text/javascript" src="/public/vendor/jquery-2.2.3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js'></script>
 </head>
 <body>
@@ -19,15 +24,22 @@
   <br>
   <input id="assignRoomName" placeholder="Your room name here"/>
   <button id="createBtn">Start a room</button>
- 
-  <ul id="roomList" style="border: solid">
 
+  <!-- --------------------------------------------------------------------- -->
 
-    <% for (key in room_data) { %>
-      <button  value=<%= key %> class="createdRooms"><%= key %></button>
-    <% } %>
-  </ul>
+  <div>
+      <% for (let game in game_data) { %>
+        <div class="roomList" id=<%=game%> style="background-color: green; display: none;">
+          <% for (let room in game_data[game].room_data) { %>
+            <button class="room" data-gameid=<%=game%> data-roomid=<%=room%> value=<%=room%>><%=room%></button>
+          <% } %>
+        </div> 
+      <% } %>
+  </div>
 
+  <!-- --------------------------------------------------------------------- -->
+
+  <br>
   <div id="logs" style="border: solid; background-color: yellow">
     <br/>
     <br/>
