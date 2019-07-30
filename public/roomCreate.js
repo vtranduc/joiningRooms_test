@@ -2,24 +2,11 @@ var socket = io.connect('http://localhost:8080');
 
 console.log('hello world')
 
-// const createBtn = document.getElementById('createBtn');
-// const assignRoomName = document.getElementById('assignRoomName');
-// const roomList = document.getElementById('roomList')
-
-
-// createBtn.addEventListener('click', () => {
-//   socket.emit('creatingRoom', {
-//     roomName: assignRoomName.value
-//   });
-// });
-
 //====================================================
 
 const roomList = document.getElementsByClassName('roomList')
-
 const gameList = document.getElementsByClassName('game');
 for (let game of gameList) {
-  // console.log(game)
   const gameShower = document.getElementById(game.value)
   game.addEventListener('click', (event) => {
     for (let gameBar of roomList) {
@@ -29,13 +16,29 @@ for (let game of gameList) {
   })
 }
 
+//////////////////////////////// FIXXXXXXXXXXXXXXXXX
 
+const showRoomsForGame = function() {
+
+};
+
+
+// Handle socket response
 
 socket.on('updateUserList', (data) => {
   logs.innerHTML = "";
   for (let key in data) {
     logs.innerHTML += `<p>${key}</p>`
   };
+});
+
+socket.on('createNewRoom', (data) => {
+  const newBtn = document.createElement('button');
+  newBtn.addEventListener('click', () => {
+    socket.emit('joinARoom', data);
+  })
+  newBtn.innerHTML = data.roomId;
+  document.getElementById('availableRoomsFor' + data.gameId).appendChild(newBtn);
 });
 
 // Loading jquery
@@ -45,7 +48,7 @@ $(document).ready(() => {
   dynamicRoom();
 });
 
-// Functions to be loaded on jquery
+// To be loaded on jquery when DOM is ready
 
 const roomJoiner = function() {
   $('.room').on('click', function () {
@@ -58,51 +61,15 @@ const roomJoiner = function() {
 const dynamicRoom = function() {
   $('.roomCreator').on('submit', function(event) {
     event.preventDefault();
+    const gameId = $(this).attr('data-gamename');
     $.ajax('/createRoom', {
       type: 'POST',
       data: $(this).serialize(),
       dataType: 'text'
     }).done(function(data) {
-      console.log('successful: ', data)
-
-      const gameName = $(this).attr('data-gamename');
-      console.log(gameName)
-      console.log($(this))
-
+      socket.emit('createNewRoom', {roomId: data, gameId: gameId})
     }).fail(function(error) {
-      console.log('Failed: ', error)
+      console.log('Ajax failed: ', error)
     })
   });
-}
-
-//====================================================
-
-// let createdRooms = document.getElementsByClassName('createdRooms');
-
-// for (let room of createdRooms) {
-//   room.addEventListener("click", () => {
-//     socket.emit('joiningRoom', room.value)
-//   })
-// }
-
-// socket.on('creatingRoom', (data) => {
-//   console.log('2')
-
-//   const btn = document.createElement('button');
-//   btn.addEventListener('click', () => {
-//     console.log('Hello hi')
-//     socket.emit('joiningRoom', data.roomName)
-//   })
-//   btn.innerHTML = data.roomName;
-//   roomList.appendChild(btn);
-// });
-
-// const logs = document.getElementById('logs');
-
-// socket.on('addingNewUser', (data) => {
-//   logs.innerHTML ="";
-//   for (let key in data) {
-//     logs.innerHTML += `<p>${key}</p>`
-//   }
-// });
-
+};

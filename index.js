@@ -7,18 +7,28 @@ const bodyParser = require("body-parser");
 
 let game_data ={
   whosbigger:{
+    max_players: 8,
+    min_players: 2,
     room_data: {
-      woodpecker: {},
-      dragon: {},
-      hippo: {}
+      woodpecker: {passcode: null},
+      dragon: {passcode: null},
+      hippo: {passcode: 'aaa'}
     }
   },
   kingsCup: {
+    max_players: 8,
+    min_players: 2,
     room_data: {
-      woofpecker: {}
+      woofpecker: {passcode: null}
     }
   },
-  goofy: {room_data: {}}
+  goofy: {
+    max_players: 8,
+    min_players: 2,
+    room_data: {
+
+    }
+  }
 }
 
 // App setup
@@ -43,19 +53,11 @@ app.get("/", (req, res) => {
 })
 
 app.post('/createRoom', function(req, res) {
-  console.log(req.body.selectedName)
-  console.log('hello')
-
-  if (validateNewRoom(req.body.selectedName, game_data)) {
-    console.log('this is fine');
-
-    
-
+  if (validateNewRoom(req.body.selectedName, req.body.gameName, game_data)) {
+    res.send(req.body.selectedName)
   } else {
-    console.log('THIS NAME IS BAD')
+    console.log('This game is invalid');
   }
-
-  res.send(req.body.selectedName)
 })
 
 // // Socket setup
@@ -66,23 +68,14 @@ io.on('connection', (socket) => {
 
   console.log(socket.id)
 
-  // socket.on('creatingRoom', (data) => {
-  //   if (room_data[data.roomName]) {
-  //   } else {
-  //     room_data[data.roomName] = {};
-  //     io.sockets.emit('creatingRoom', data)
-  //   }
-  // });
+  // Create new room
 
+  socket.on('createNewRoom', (data) => {
+    inserNewRoom(data.roomId, data.gameId, game_data);
+    io.sockets.emit('createNewRoom', data);
+  });
 
-  // socket.on('joiningRoom', (data) => {
-  //   socket.join(data);
-  //   var clients = io.sockets.adapter.rooms[data].sockets;
-  //   io.sockets.to(data).emit('addingNewUser', clients);
-  // });
-
-  // socket.on('')
-
+  // Join a room
 
   socket.on('joinARoom', (data) => {
 
@@ -134,30 +127,16 @@ const getJoinedRooms = function(game_data, io, userID) {
   return output;
 };
 
-const validateNewRoom = function(roomName, game_data) {
+const validateNewRoom = function(roomName, gameName, game_data) {
   if (roomName === "") {
     return false;
   }
-  for (let gameName in game_data) {
-    if (game_data[gameName].room_data[roomName]) {
-      return false;
-    }
+  if (game_data[gameName].room_data[roomName]) {
+    return false;
   }
   return true;
 };
 
-// et game_data ={
-//   whosbigger:{
-//     room_data: {
-//       woodpecker: {},
-//       dragon: {},
-//       hippo: {}
-//     }
-//   },
-//   kingsCup: {
-//     room_data: {
-//       woofpecker: {}
-//     }
-//   },
-//   goofy: {room_data: {}}
-// }
+const inserNewRoom = function(roomId, gameId, game_data) {
+  game_data[gameId].room_data[roomId] = {};
+};
