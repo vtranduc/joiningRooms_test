@@ -14,13 +14,9 @@ createBtn.addEventListener('click', () => {
 
 
 
-const createdRooms = document.getElementsByClassName('createdRooms');
+let createdRooms = document.getElementsByClassName('createdRooms');
 
 for (let room of createdRooms) {
-  console.log(room.value);
-
-  // console.log(createRooms[room].value)
-
   room.addEventListener("click", () => {
     socket.emit('joiningRoom', room.value)
   })
@@ -28,23 +24,22 @@ for (let room of createdRooms) {
 
 socket.on('creatingRoom', (data) => {
   console.log('2')
-  roomList.innerHTML += `<button>${data.roomName}</button>`;
-});
 
-//========================================================
+  const btn = document.createElement('button');
+  btn.addEventListener('click', () => {
+    console.log('Hello hi')
+    socket.emit('joiningRoom', data.roomName)
+  })
+  btn.innerHTML = data.roomName;
+  roomList.appendChild(btn);
+
+});
 
 const logs = document.getElementById('logs');
 
 socket.on('addingNewUser', (data) => {
-  // logs.innerHTML += `<p>${data} has joined the room</p>`
-
   logs.innerHTML ="";
-
   for (let key in data) {
     logs.innerHTML += `<p>${key}</p>`
   }
-
 });
-
-
-//========================================================
