@@ -2,8 +2,7 @@ const express = require('express');
 var socket = require('socket.io');
 const bodyParser = require("body-parser");
 
-
-// Exaple data
+// Example data
 
 let game_data ={
   whosbigger:{
@@ -26,17 +25,17 @@ let game_data ={
     max_players: 8,
     min_players: 2,
     room_data: {
-
     }
   },
   blackjack: {
     max_players: 8,
     min_players: 2,
     room_data: {
-
     }
   }
 }
+
+module.exports = {game_data};
 
 // App initialization
 
@@ -55,8 +54,8 @@ var server = app.listen(8080, () => {
 
 app.get("/", (req, res) => {
   res.render("lobby", {game_data
-  })
-})
+  });
+});
 
 app.post('/createRoom', function(req, res) {
   const refinedName = nameRefine(req.body.selectedName);
@@ -64,8 +63,12 @@ app.post('/createRoom', function(req, res) {
     res.send(refinedName);
   } else {
     console.log('This name is invalid');
-  }
-})
+  };
+});
+
+app.post('/testRedirect', (req, res) => {
+  res.render('testRedirect')
+});
 
 // Socket setup
 
@@ -82,17 +85,23 @@ io.on('connection', (socket) => {
   // Handle the event when the user is disconnected
 
   socket.on('disconnect', () => {
-    const joinedRooms = getJoinedRooms(game_data, io, socket.id);
     let room_info = io.sockets.adapter.rooms[currentRoom];
     if (room_info) {
-      io.sockets.to(currentRoom).emit('updateUserList', room_info.sockets);
+      io.sockets.to(currentRoom).emit('updateUserList', [Object.keys(room_info.sockets), Object.keys(room_info.sockets).length >= game_data[getRoomGameId(currentRoom).gameId].min_players]);
     }
   })
+
+  // Ask the client to enter passcode if necessary
+
+  //-----------------------------------
+  // socket.on('joinAttempt', (data) => {
+
+  // });
 
   // Create new room
 
   socket.on('createNewRoom', (data) => {
-    inserNewRoom(data.roomId, data.gameId, game_data);
+    inserNewRoom(data.roomId, data.gameId, data.passcode, game_data);
     io.sockets.emit('createNewRoom', data);
   });
 
@@ -108,7 +117,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-
     // Check to see if user is trying to join the room he/she has already joined
 
     const uniqueRoomName = `${data.gameId}-${data.roomId}`;
@@ -123,7 +131,7 @@ io.on('connection', (socket) => {
       socket.leave(joinedRoom);
       let room_info = io.sockets.adapter.rooms[joinedRoom];
       if (room_info) {
-        io.sockets.to(joinedRoom).emit('updateUserList', room_info.sockets);
+        io.sockets.to(joinedRoom).emit('updateUserList', [Object.keys(room_info.sockets), Object.keys(room_info.sockets).length >= game_data[data.gameId].min_players]);
       }
     }
 
@@ -132,13 +140,31 @@ io.on('connection', (socket) => {
     currentRoom = uniqueRoomName;
     socket.join(uniqueRoomName);
     const clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
-    io.sockets.to(uniqueRoomName).emit('updateUserList', clients);
+    io.sockets.to(uniqueRoomName).emit('updateUserList', [Object.keys(clients), Object.keys(clients).length >= game_data[data.gameId].min_players]);
   });
+
+
+  // Redirect
+
+  socket.on('redirectOtherUsers', (data) => {
+    socket.broadcast.to(currentRoom).emit('moveUsers')
+  })
 
 });
 
 
 //=============== HELPER FUNCTIONS =================================================
+
+// Break down room name to obtain gameId and roomId
+
+const getRoomGameId = function(room) {
+  for (let i = 0; i < room.length; i++) {
+    if (room[i] === '-') {
+      return {gameId: room.slice(0, i), roomId: room.slice(i+1)};
+    };
+  };
+};
+
 
 // Get current number of users in the room
 
@@ -184,8 +210,8 @@ const validateNewRoom = function(roomName, gameName, game_data) {
 
 // This adds new room to the data
 
-const inserNewRoom = function(roomId, gameId, game_data) {
-  game_data[gameId].room_data[roomId] = {};
+const inserNewRoom = function(roomId, gameId, passcode, game_data) {
+  game_data[gameId].room_data[roomId] = {passcode: passcode};
 };
 
 // This removes the spaces at the end for the new room's name

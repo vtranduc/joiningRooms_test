@@ -4,12 +4,34 @@ console.log('hello world')
 
 // Handle socket response
 
+// --------------------------
+
+// socket.on('resolvePasscode', (data) => {
+  
+// });
+
+// --------------------------
+
 socket.on('updateUserList', (data) => {
   logs.innerHTML = "";
-  for (let key in data) {
+  console.log(data[1])
+  for (let key of data[0]) {
     logs.innerHTML += `<p>${key}</p>`
   };
+  if (data[1]) {
+    // <form method="POST" action="/testRedirect">
+    logs.innerHTML += `
+      
+        <button class="userDirector">JOIN ME!</button>
+      
+      `;
+    
+  };
 });
+
+socket.on('moveUsers', (data) => {
+  alert('MOVE!')
+})
 
 socket.on('createNewRoom', (data) => {
   const newBtn = document.createElement('button');
@@ -27,12 +49,27 @@ $(document).ready(() => {
   roomJoiner();
   dynamicRoom();
   showRoomsForGame();
+  userRedirection();
 });
 
 // To be loaded on jquery when DOM is ready
 
+const userRedirection = function() {
+  $('.userDirector').on('click', function() {
+    console.log('kotoko')
+  });
+};
+
 const roomJoiner = function() {
   $('.room').on('click', function () {
+
+    // IMPORTANT //
+    // const enteredPasscode = prompt('This room is locked. Enter passcode here')
+    // console.log(enteredPasscode)
+    // console.log('ENDING MAS')
+    // return;
+    //////////////////////
+
     socket.emit('joinARoom', {
       roomId: $(this).attr('data-roomid'),
       gameId: $(this).attr('data-gameid')
@@ -49,7 +86,11 @@ const dynamicRoom = function() {
       data: $(this).serialize(),
       dataType: 'text'
     }).done(function(data) {
-      socket.emit('createNewRoom', {roomId: data, gameId: gameId})
+      socket.emit('createNewRoom', {
+        roomId: data,
+        gameId: gameId,
+        passcode: $(`#chosenPasscodeFor${gameId}`).val()
+      });
     }).fail(function(error) {
       console.log('Ajax failed: ', error)
     });

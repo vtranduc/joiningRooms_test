@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <!-- JOE -->
-  <link rel='stylesheet' href='/public/lobby.css'>
+  <link rel='stylesheet' href='/public/styles/lobby.css'>
 
 
   <title>Selecting room</title>
@@ -40,9 +40,11 @@
 
         <form method="POST" action="/createRoom" class="roomCreator" data-gamename=<%=game%>>
           <!-- ONE class="makeAroom" -->
-          <input class="makeAroom" name="selectedName" placeholder="Enter unique room name to be created here"> 
+          <input class="makeAroom" name="selectedName" placeholder="Room name here"> 
           <!--  -->
           <input type="hidden" name="gameName" value = "<%=game%>">
+          <% let uniquePasscodeForGame = 'chosenPasscodeFor' + game; %>
+          <input id=<%=uniquePasscodeForGame%> placeholder="Passcode (Optional)">
           <!-- TWO class="createRoom"-->
           <button class="createRoom" type="submit">Create a room</button>
           <!--  -->
