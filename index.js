@@ -65,7 +65,7 @@ var server = app.listen(8080, () => {
 // Apps
 
 app.get("/", (req, res) => {
-  res.render("lobby", {game_data
+  res.render("mainPage", {game_data
   });
 });
 
@@ -76,15 +76,6 @@ app.post('/createRoom', function(req, res) {
   } else {
     console.log('This name is invalid');
   };
-});
-
-// app.post('/enterGame/:roomId', (req, res) => {
-//   res.render('testRedirect', {roomId: req.params.roomId})
-// });
-
-app.get('/enterGame/:uniqueRoomName', (req, res) => {
-  console.log('GAME HERE BOYS');
-  res.render('testRedirect')
 });
 
 // Socket setup
@@ -159,7 +150,6 @@ io.on('connection', (socket) => {
       let roomGameId = getRoomGameId(joinedRoom);
       if (room_info) {
         if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players) {
-          // console.log('delete all')
           game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
         };
         io.sockets.to(joinedRoom).emit('updateRoomStatus', [
@@ -179,12 +169,6 @@ io.on('connection', (socket) => {
     currentRoom = uniqueRoomName;
     socket.join(uniqueRoomName);
     const clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
-    // io.sockets.to(uniqueRoomName).emit('updateUserList', [
-    //   Object.keys(clients),
-    //   Object.keys(clients).length >= game_data[data.gameId].min_players,
-    //   currentRoom,
-    //   null
-    // ]);
     io.sockets.to(uniqueRoomName).emit('updateRoomStatus', [
       Object.keys(clients),
       currentRoom,
@@ -194,11 +178,9 @@ io.on('connection', (socket) => {
     ]);
   });
 
-
   // Trigger user joining event
 
   socket.on('handleJoinGameEvent', (data) => {
-    // console.log('let user join')
 
     const clients = io.sockets.adapter.rooms[currentRoom].sockets;
     const roomGameId = getRoomGameId(currentRoom);
@@ -211,18 +193,10 @@ io.on('connection', (socket) => {
         socket.id,
         game_data[roomGameId.gameId].min_players
       ]);
-      // console.log('hello?')
     } else if (Object.keys(clients).length === game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
-      // console.log("GO NOW")
-
       io.sockets.to(currentRoom).emit('directToGame', {uniqueRoomName: currentRoom});
 
     }
-
-    // console.log(Object.keys(clients).length);
-    // console.log(game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length)
-    // console.log('sup')
-    // io.sockets.to(currentRoom).emit('directToGame', currentRoom)
   });
 
 });

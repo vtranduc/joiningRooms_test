@@ -9,7 +9,7 @@ console.log('hello world')
 socket.on('directToGame', (data) => {
   // console.log(data)
   // window.location.href = `/enterGame/${data.uniqueRoomName}`;
-  $('#lobby').hide(300);
+  $('#lobby').slideUp(100);
   $('#showGame').toggle(1000);
 })
 

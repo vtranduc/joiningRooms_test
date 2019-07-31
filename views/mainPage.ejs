@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- HTML setup -->
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <!-- CSS -->
+
+  <link rel='stylesheet' href='/public/styles/lobby.css'>
+
+  <!-- Webpage title -->
+
+  <title>Welcome to your card games!</title>
+
+  <!-- Required for jquery -->
+
+  <script type="text/javascript" src="/public/vendor/jquery-2.2.3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<!-- Required for socket -->
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js'></script>
+</head>
+<body>
+
+  <!-- Lobby. This is shown by default -->
+
+  <% include lobby/lobby %>
+
+  <h1 id="showGame" style="display: none;">Put your game here</h1>
+  
+
+  <script src='/public/lobby.js'></script>
+</body>
+</html>
