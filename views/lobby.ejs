@@ -19,6 +19,7 @@
 </head>
 <body>
 
+<div id="lobby">
 
 <!-- DIFFERENCE -->
   <div style= "border: solid">
@@ -34,7 +35,6 @@
   <div>
     <% for (let game in game_data) { %>
       <div class="roomList" id=<%=game%> style="background-color: green; display: none;">
-
         <!--  -->
         <br/>
 
@@ -68,10 +68,20 @@
   <br>
   <div id="logs" style="border: solid; background-color: yellow">
     <br/>
+      
     <br/>
   </div>
+
+  <!--  -->
+  <button id="joinGameBtn" style="display: none;">JOIN GAME!</button>
+  <p style="display: none;" id="waitingMsg">Waiting for other players to join...</p>
+  <!--  -->
+
+  </div>
+
+  <h1 id="showGame" style="display: none;">Put your game here</h1>
   
 
-  <script src='/public/roomCreate.js'></script>
+  <script src='/public/lobby.js'></script>
 </body>
 </html>

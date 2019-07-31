@@ -4,21 +4,33 @@ const bodyParser = require("body-parser");
 
 // Example data
 
-let game_data ={
+let game_data = {
   whosbigger:{
     max_players: 3,
     min_players: 2,
     room_data: {
-      woodpecker: {passcode: null},
-      dragon: {passcode: null},
-      hippo: {passcode: 'aaa'}
+      woodpecker: {
+        passcode: null,
+        joinedPlayers: []
+      },
+      dragon: {
+        passcode: null,
+        joinedPlayers: []
+      },
+      hippo: {
+        passcode: 'aaa',
+        joinedPlayers: []
+      }
     }
   },
   kingsCup: {
     max_players: 8,
     min_players: 2,
     room_data: {
-      woofpecker: {passcode: null}
+      woofpecker: {
+        passcode: null,
+        joinedPlayers: []
+      }
     }
   },
   goofy: {
@@ -66,7 +78,12 @@ app.post('/createRoom', function(req, res) {
   };
 });
 
-app.post('/testRedirect', (req, res) => {
+// app.post('/enterGame/:roomId', (req, res) => {
+//   res.render('testRedirect', {roomId: req.params.roomId})
+// });
+
+app.get('/enterGame/:uniqueRoomName', (req, res) => {
+  console.log('GAME HERE BOYS');
   res.render('testRedirect')
 });
 
@@ -85,18 +102,27 @@ io.on('connection', (socket) => {
   // Handle the event when the user is disconnected
 
   socket.on('disconnect', () => {
+
+    if (!currentRoom) {
+      return
+    }
     let room_info = io.sockets.adapter.rooms[currentRoom];
+    let roomGameId = getRoomGameId(currentRoom);
     if (room_info) {
-      io.sockets.to(currentRoom).emit('updateUserList', [Object.keys(room_info.sockets), Object.keys(room_info.sockets).length >= game_data[getRoomGameId(currentRoom).gameId].min_players]);
+      if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players) {
+        game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
+      };
+      io.sockets.to(currentRoom).emit('updateRoomStatus', [
+        Object.keys(room_info.sockets),
+        currentRoom,
+        game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers,
+        socket.id,
+        game_data[roomGameId.gameId].min_players
+      ]);
+    } else {
+      game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
     }
   })
-
-  // Ask the client to enter passcode if necessary
-
-  //-----------------------------------
-  // socket.on('joinAttempt', (data) => {
-
-  // });
 
   // Create new room
 
@@ -127,11 +153,24 @@ io.on('connection', (socket) => {
 
     // Leave all the rooms
 
-    for (joinedRoom of joinedRooms) {
+    for (let joinedRoom of joinedRooms) {
       socket.leave(joinedRoom);
       let room_info = io.sockets.adapter.rooms[joinedRoom];
+      let roomGameId = getRoomGameId(joinedRoom);
       if (room_info) {
-        io.sockets.to(joinedRoom).emit('updateUserList', [Object.keys(room_info.sockets), Object.keys(room_info.sockets).length >= game_data[data.gameId].min_players]);
+        if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players) {
+          // console.log('delete all')
+          game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
+        };
+        io.sockets.to(joinedRoom).emit('updateRoomStatus', [
+          Object.keys(room_info.sockets),
+          joinedRoom,
+          game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers,
+          socket.id,
+          game_data[roomGameId.gameId].min_players
+        ]);
+      } else {
+        game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
       }
     }
 
@@ -140,20 +179,65 @@ io.on('connection', (socket) => {
     currentRoom = uniqueRoomName;
     socket.join(uniqueRoomName);
     const clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
-    io.sockets.to(uniqueRoomName).emit('updateUserList', [Object.keys(clients), Object.keys(clients).length >= game_data[data.gameId].min_players]);
+    // io.sockets.to(uniqueRoomName).emit('updateUserList', [
+    //   Object.keys(clients),
+    //   Object.keys(clients).length >= game_data[data.gameId].min_players,
+    //   currentRoom,
+    //   null
+    // ]);
+    io.sockets.to(uniqueRoomName).emit('updateRoomStatus', [
+      Object.keys(clients),
+      currentRoom,
+      game_data[data.gameId].room_data[data.roomId].joinedPlayers,
+      socket.id,
+      game_data[data.gameId].min_players
+    ]);
   });
 
 
-  // Redirect
+  // Trigger user joining event
 
-  // socket.on('redirectOtherUsers', (data) => {
-  //   socket.broadcast.to(currentRoom).emit('moveUsers')
-  // })
+  socket.on('handleJoinGameEvent', (data) => {
+    // console.log('let user join')
+
+    const clients = io.sockets.adapter.rooms[currentRoom].sockets;
+    const roomGameId = getRoomGameId(currentRoom);
+    game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.push(socket.id);
+    if (Object.keys(clients).length > game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
+      io.sockets.to(currentRoom).emit('updateRoomStatus', [
+        Object.keys(clients),
+        currentRoom,
+        game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers,
+        socket.id,
+        game_data[roomGameId.gameId].min_players
+      ]);
+      // console.log('hello?')
+    } else if (Object.keys(clients).length === game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
+      // console.log("GO NOW")
+
+      io.sockets.to(currentRoom).emit('directToGame', {uniqueRoomName: currentRoom});
+
+    }
+
+    // console.log(Object.keys(clients).length);
+    // console.log(game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length)
+    // console.log('sup')
+    // io.sockets.to(currentRoom).emit('directToGame', currentRoom)
+  });
 
 });
 
-
+//==================================================================================
+//==================================================================================
+//==================================================================================
 //=============== HELPER FUNCTIONS =================================================
+//==================================================================================
+//==================================================================================
+//==================================================================================
+
+//
+
+// This helps to determine whether the player should 
 
 // Break down room name to obtain gameId and roomId
 
@@ -211,7 +295,10 @@ const validateNewRoom = function(roomName, gameName, game_data) {
 // This adds new room to the data
 
 const inserNewRoom = function(roomId, gameId, passcode, game_data) {
-  game_data[gameId].room_data[roomId] = {passcode: passcode};
+  game_data[gameId].room_data[roomId] = {
+    passcode: passcode,
+    joinedPlayers: []
+  };
 };
 
 // This removes the spaces at the end for the new room's name

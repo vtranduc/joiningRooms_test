@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://localhost:8080/');
 
 console.log('hello world')
 
@@ -6,28 +6,44 @@ console.log('hello world')
 
 // --------------------------
 
-// socket.on('resolvePasscode', (data) => {
-  
-// });
+socket.on('directToGame', (data) => {
+  // console.log(data)
+  // window.location.href = `/enterGame/${data.uniqueRoomName}`;
+  $('#lobby').hide(300);
+  $('#showGame').toggle(1000);
+})
 
 // --------------------------
+// --------------------------
+// --------------------------
 
-socket.on('updateUserList', (data) => {
-  logs.innerHTML = "";
-  console.log(data[1])
+
+socket.on('updateRoomStatus', (data) => {
+  logs.innerHTML = "<h1>Welcome to room " + data[1] + "<h1>";
   for (let key of data[0]) {
-    logs.innerHTML += `<p>${key}</p>`
-  };
-  if (data[1]) {
-    // <form method="POST" action="/testRedirect">
-    logs.innerHTML += `
-      
-        <button class="userDirector">JOIN ME!</button>
-      
-      `;
-    
-  };
+    if (data[2].includes(key)) {
+      logs.innerHTML += `<p style="color: blue">${key} I'm ready!</p>`
+    } else {
+      logs.innerHTML += `<p>${key}</p>`
+    }
+  }
+  if (data[2].includes(socket.id)) {
+    $('#joinGameBtn').css("display", "none");
+    $('#waitingMsg').css("display", "block");
+  } else {
+    if (data[0].length >= data[4]) {
+      $('#joinGameBtn').css("display", "block");
+    } else {
+      $('#joinGameBtn').css("display", "none");
+    }
+    $('#waitingMsg').css("display", "none");
+  }
 });
+
+
+// --------------------------
+// --------------------------
+// --------------------------
 
 socket.on('moveUsers', (data) => {
   alert('MOVE!')
@@ -45,18 +61,21 @@ socket.on('createNewRoom', (data) => {
 
 // Loading jquery
 
-$(document).ready(() => {
+$(document).ready(function() {
   roomJoiner();
   dynamicRoom();
   showRoomsForGame();
-  userRedirection();
+  // userRedirection();
+  loadJoinGameBtn();
 });
+
 
 // To be loaded on jquery when DOM is ready
 
-const userRedirection = function() {
-  $('.userDirector').on('click', function() {
-    console.log('kotoko')
+
+const loadJoinGameBtn = function() {
+  $('#joinGameBtn').on('click', function() {
+    socket.emit('handleJoinGameEvent');
   });
 };
 
