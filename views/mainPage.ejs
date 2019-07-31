@@ -31,7 +31,13 @@
 
   <% include lobby/lobby %>
 
-  <h1 id="showGame" style="display: none;">Put your game here</h1>
+  <% for (let key in game_data) { %>
+    <% let uniqueIdForGameElement = "gameFor" + key %>
+    <h1 id=<%= uniqueIdForGameElement %> style="display: none;">Game of <%= key %> here</h1>
+
+    
+
+  <% } %>
   
 
   <script src='/public/lobby.js'></script>

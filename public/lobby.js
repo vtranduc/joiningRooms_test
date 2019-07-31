@@ -9,8 +9,10 @@ console.log('hello world')
 socket.on('directToGame', (data) => {
   // console.log(data)
   // window.location.href = `/enterGame/${data.uniqueRoomName}`;
+
   $('#lobby').slideUp(100);
-  $('#showGame').toggle(1000);
+  console.log(`#gameFor${data.gameId}`)
+  $(`#gameFor${data.uniqueRoomName}`).toggle(1000);
 })
 
 // --------------------------

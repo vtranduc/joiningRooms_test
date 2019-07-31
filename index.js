@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 // Example data
 
 let game_data = {
-  whosbigger:{
+  whoIsBigger:{
     max_players: 3,
     min_players: 2,
     room_data: {
@@ -33,13 +33,13 @@ let game_data = {
       }
     }
   },
-  goofy: {
+  BigTwo: {
     max_players: 8,
     min_players: 2,
     room_data: {
     }
   },
-  blackjack: {
+  BlackJack: {
     max_players: 8,
     min_players: 2,
     room_data: {
@@ -194,7 +194,7 @@ io.on('connection', (socket) => {
         game_data[roomGameId.gameId].min_players
       ]);
     } else if (Object.keys(clients).length === game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
-      io.sockets.to(currentRoom).emit('directToGame', {uniqueRoomName: currentRoom});
+      io.sockets.to(currentRoom).emit('directToGame', {uniqueRoomName: roomGameId.gameId});
 
     }
   });
