@@ -146,9 +146,9 @@ io.on('connection', (socket) => {
 
   // Redirect
 
-  socket.on('redirectOtherUsers', (data) => {
-    socket.broadcast.to(currentRoom).emit('moveUsers')
-  })
+  // socket.on('redirectOtherUsers', (data) => {
+  //   socket.broadcast.to(currentRoom).emit('moveUsers')
+  // })
 
 });
 
