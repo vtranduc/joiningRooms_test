@@ -1,0 +1,113 @@
+.game {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  text-shadow: 1px 1px pink, -1px -1px maroon;
+  line-height: 3.5em;
+  text-align: center;
+  display: inline-block;
+  width: 10.5em;
+  -webkit-border-radius: 0.75em;
+  -moz-border-radius: 0.75em;
+  -o-border-radius: 0.75em;
+  border-radius: 0.75em;
+  background-color: red;
+  -webkit-box-shadow: 0 0.2em maroon;
+  -moz-box-shadow: 0 0.2em maroon;
+  -o-box-shadow: 0 0.2em maroon;
+  box-shadow: 0 0.2em maroon;
+  color: rgba(0, 0, 0, 0.616);
+  font-weight: bold;
+  font-size: x-small;
+  margin: 5px;
+  background-color: red;
+  background-image: -o-linear-gradient(left top, pink 3%, red 22%, maroon 99%);
+  background-image: -moz-linear-gradient(
+    left top,
+    pink 3%,
+    red 22%,
+    maroon 99%
+  );
+  background-image: -webkit-linear-gradient(
+    left top,
+    pink 3%,
+    red 22%,
+    maroon 99%
+  );
+  background-image: linear-gradient(left top, pink 3%, red 22%, maroon 99%);
+  cursor: pointer;
+  padding-left: 5px;
+}
+.room {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  display: inline-block;
+  line-height: 2.5em;
+  width: 8.5em;
+  margin: 5px;
+  font-weight: inherit;
+  font-size: small;
+  padding: 10px 10px 10px 10px;
+  background-color: lightgray;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: rgb(0, 0, 0);
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+  box-shadow: 0 0.2em gray;
+  cursor: pointer;
+}
+// .game:active,
+// .room :active {
+//   box-shadow: none;
+//   position: relative;
+//   top: 0.2em;
+// }
+
+.createRoom {
+  font-family: sans-serif;
+  text-align: center;
+  display: inline-block;
+  line-height: 1.5em;
+  width: 7.5em;
+  margin: 5px;
+  font-weight: inherit;
+  font-size: x-small;
+  padding: 5px 5px 5px 5px;
+  background-color: rgb(40, 58, 73);
+  text-shadow: -1px -1px black, 1px 1px rgb(112, 105, 105);
+  color: ivory;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+  box-shadow: 0 0.2em rgb(42, 46, 43);
+  animation: shine 1s infinite;
+  cursor: pointer;
+}
+
+@keyframes shine {
+  0% {
+    background-color: rgb(40, 58, 73);
+  }
+
+  25% {
+    background-color: rgb(81, 96, 109);
+  }
+  50% {
+    background-color: rgb(110, 132, 149);
+  }
+
+  75% {
+    background-color: rgb(50, 63, 73);
+  }
+  100% {
+    background-color: rgb(40, 58, 73);
+  }
+}
+
+.makeAroom {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: x-small;
+  height: 2.5em;
+  width: 25em;
+}

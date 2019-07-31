@@ -2,27 +2,6 @@ var socket = io.connect('http://localhost:8080');
 
 console.log('hello world')
 
-//====================================================
-
-const roomList = document.getElementsByClassName('roomList')
-const gameList = document.getElementsByClassName('game');
-for (let game of gameList) {
-  const gameShower = document.getElementById(game.value)
-  game.addEventListener('click', (event) => {
-    for (let gameBar of roomList) {
-      gameBar.style.display = "none";
-    }
-    gameShower.style.display = "block";
-  })
-}
-
-//////////////////////////////// FIXXXXXXXXXXXXXXXXX
-
-const showRoomsForGame = function() {
-
-};
-
-
 // Handle socket response
 
 socket.on('updateUserList', (data) => {
@@ -38,6 +17,7 @@ socket.on('createNewRoom', (data) => {
     socket.emit('joinARoom', data);
   })
   newBtn.innerHTML = data.roomId;
+  newBtn.setAttribute('class', 'room');
   document.getElementById('availableRoomsFor' + data.gameId).appendChild(newBtn);
 });
 
@@ -46,15 +26,17 @@ socket.on('createNewRoom', (data) => {
 $(document).ready(() => {
   roomJoiner();
   dynamicRoom();
+  showRoomsForGame();
 });
 
 // To be loaded on jquery when DOM is ready
 
 const roomJoiner = function() {
   $('.room').on('click', function () {
-    const roomId = $(this).attr('data-roomid');
-    const gameId = $(this).attr('data-gameid')
-    socket.emit('joinARoom', {roomId: roomId, gameId: gameId})
+    socket.emit('joinARoom', {
+      roomId: $(this).attr('data-roomid'),
+      gameId: $(this).attr('data-gameid')
+    });
   });
 };
 
@@ -70,6 +52,13 @@ const dynamicRoom = function() {
       socket.emit('createNewRoom', {roomId: data, gameId: gameId})
     }).fail(function(error) {
       console.log('Ajax failed: ', error)
-    })
+    });
   });
+};
+
+const showRoomsForGame = function() {
+  $('.game').on('click', function(event) {
+    $('.roomList').hide();
+    $(`#${$(this).attr('data-gamename')}`).toggle(500);
+  })
 };

@@ -1,0 +1,106 @@
+.game {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  text-shadow: 1px 1px pink, -1px -1px maroon;
+  line-height: 3.5em;
+  text-align: center;
+  display: inline-block;
+  width: 10.5em;
+  border-radius: 0.75em;
+  background-color: red;
+  -webkit-box-shadow: 0 0.2em maroon;
+  -o-box-shadow: 0 0.2em maroon;
+  box-shadow: 0 0.2em maroon;
+  color: rgba(0, 0, 0, 0.616);
+  font-weight: bold;
+  font-size: x-small;
+  margin: 5px;
+  background-color: red;
+  background-image: -webkit-gradient(linear, left top, right bottom, color-stop(3%, pink), color-stop(22%, red), color-stop(99%, maroon));
+  background-image: linear-gradient(left top, pink 3%, red 22%, maroon 99%);
+  cursor: pointer;
+  padding-left: 5px;
+}
+
+.room {
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  display: inline-block;
+  line-height: 2.5em;
+  width: 8.5em;
+  margin: 5px;
+  font-weight: inherit;
+  font-size: small;
+  padding: 10px 10px 10px 10px;
+  background-color: lightgray;
+  text-shadow: -1px -1px black, 1px 1px white;
+  color: black;
+  border-radius: 7px;
+  -webkit-box-shadow: 0 0.2em gray;
+          box-shadow: 0 0.2em gray;
+  cursor: pointer;
+}
+
+.createRoom {
+  font-family: sans-serif;
+  text-align: center;
+  display: inline-block;
+  line-height: 1.5em;
+  width: 7.5em;
+  margin: 5px;
+  font-weight: inherit;
+  font-size: x-small;
+  padding: 5px 5px 5px 5px;
+  background-color: #283a49;
+  text-shadow: -1px -1px black, 1px 1px #706969;
+  color: ivory;
+  border-radius: 7px;
+  -webkit-box-shadow: 0 0.2em #2a2e2b;
+          box-shadow: 0 0.2em #2a2e2b;
+  -webkit-animation: shine 1s infinite;
+          animation: shine 1s infinite;
+  cursor: pointer;
+}
+
+@-webkit-keyframes shine {
+  0% {
+    background-color: #283a49;
+  }
+  25% {
+    background-color: #51606d;
+  }
+  50% {
+    background-color: #6e8495;
+  }
+  75% {
+    background-color: #323f49;
+  }
+  100% {
+    background-color: #283a49;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-color: #283a49;
+  }
+  25% {
+    background-color: #51606d;
+  }
+  50% {
+    background-color: #6e8495;
+  }
+  75% {
+    background-color: #323f49;
+  }
+  100% {
+    background-color: #283a49;
+  }
+}
+
+.makeAroom {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: x-small;
+  height: 2.5em;
+  width: 25em;
+}
+/*# sourceMappingURL=lobby.css.map */

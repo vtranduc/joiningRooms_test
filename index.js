@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 
 let game_data ={
   whosbigger:{
-    max_players: 8,
+    max_players: 3,
     min_players: 2,
     room_data: {
       woodpecker: {passcode: null},
@@ -28,13 +28,19 @@ let game_data ={
     room_data: {
 
     }
+  },
+  blackjack: {
+    max_players: 8,
+    min_players: 2,
+    room_data: {
+
+    }
   }
 }
 
-// App setup
+// App initialization
 
 var app = express();
-
 
 // Set-up and start server
 
@@ -53,20 +59,35 @@ app.get("/", (req, res) => {
 })
 
 app.post('/createRoom', function(req, res) {
-  if (validateNewRoom(req.body.selectedName, req.body.gameName, game_data)) {
-    res.send(req.body.selectedName)
+  const refinedName = nameRefine(req.body.selectedName);
+  if (validateNewRoom(refinedName, req.body.gameName, game_data)) {
+    res.send(refinedName);
   } else {
-    console.log('This game is invalid');
+    console.log('This name is invalid');
   }
 })
 
-// // Socket setup
+// Socket setup
 
 var io = socket(server);
 
 io.on('connection', (socket) => {
 
-  console.log(socket.id)
+  console.log(socket.id);
+
+  // The room the user is currently joined in
+
+  let currentRoom;
+
+  // Handle the event when the user is disconnected
+
+  socket.on('disconnect', () => {
+    const joinedRooms = getJoinedRooms(game_data, io, socket.id);
+    let room_info = io.sockets.adapter.rooms[currentRoom];
+    if (room_info) {
+      io.sockets.to(currentRoom).emit('updateUserList', room_info.sockets);
+    }
+  })
 
   // Create new room
 
@@ -78,6 +99,15 @@ io.on('connection', (socket) => {
   // Join a room
 
   socket.on('joinARoom', (data) => {
+
+    // Check number of users
+
+    const numberOfExistingUsers = getNumberOfUsers(data.gameId, data.roomId, io);
+    if (numberOfExistingUsers >= game_data[data.gameId].max_players) {
+      console.log('Room is full')
+      return;
+    }
+
 
     // Check to see if user is trying to join the room he/she has already joined
 
@@ -99,6 +129,7 @@ io.on('connection', (socket) => {
 
     // Join the room
     
+    currentRoom = uniqueRoomName;
     socket.join(uniqueRoomName);
     const clients = io.sockets.adapter.rooms[uniqueRoomName].sockets;
     io.sockets.to(uniqueRoomName).emit('updateUserList', clients);
@@ -108,6 +139,17 @@ io.on('connection', (socket) => {
 
 
 //=============== HELPER FUNCTIONS =================================================
+
+// Get current number of users in the room
+
+const getNumberOfUsers = function(gameId, roomId, io) {
+  const room_data = io.sockets.adapter.rooms[`${gameId}-${roomId}`];
+  if (room_data) {
+    return Object.keys(room_data.sockets).length;
+  } else {
+    return 0;
+  }
+};
 
 // This function obtains all the rooms the user is joined.
 // Note that it may return more than 1 room
@@ -127,6 +169,9 @@ const getJoinedRooms = function(game_data, io, userID) {
   return output;
 };
 
+// This goes to check if the name for room already exists for specific game
+// and whether the name is acceptable
+
 const validateNewRoom = function(roomName, gameName, game_data) {
   if (roomName === "") {
     return false;
@@ -137,6 +182,29 @@ const validateNewRoom = function(roomName, gameName, game_data) {
   return true;
 };
 
+// This adds new room to the data
+
 const inserNewRoom = function(roomId, gameId, game_data) {
   game_data[gameId].room_data[roomId] = {};
+};
+
+// This removes the spaces at the end for the new room's name
+
+const nameRefine = function(name) {
+  let output = name;
+  if (output === '') {
+    return output;
+  };
+  for (let i = 0; i < output.length; i++) {
+    if (output[i] !== ' ') {
+      output = output.slice(i);
+      break;
+    }
+  }
+  for (let i = output.length - 1; i >= 0; i--) {
+    if (output[i] !== ' ') {
+      return output.slice(0, i + 1);
+    }
+  }
+  return '';
 };
