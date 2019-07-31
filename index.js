@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
     let room_info = io.sockets.adapter.rooms[currentRoom];
     let roomGameId = getRoomGameId(currentRoom);
     if (room_info) {
-      if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players) {
+      if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players || Object.keys(room_info.sockets).length === game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
         game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
       };
       io.sockets.to(currentRoom).emit('updateRoomStatus', [
@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
       let room_info = io.sockets.adapter.rooms[joinedRoom];
       let roomGameId = getRoomGameId(joinedRoom);
       if (room_info) {
-        if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players) {
+        if (Object.keys(room_info.sockets).length < game_data[roomGameId.gameId].min_players || Object.keys(room_info.sockets).length === game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers.length) {
           game_data[roomGameId.gameId].room_data[roomGameId.roomId].joinedPlayers = [];
         };
         io.sockets.to(joinedRoom).emit('updateRoomStatus', [
